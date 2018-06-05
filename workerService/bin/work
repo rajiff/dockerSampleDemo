@@ -1,0 +1,5 @@
+const worker = require('../worker');
+const registerQueueWorker = require('../registerQueueWorker');
+const config = require('../config');
+
+registerQueueWorker(config.EVENT_QUEUE.NEW_EMP_REGISTERED, worker);

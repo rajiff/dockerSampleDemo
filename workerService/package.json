@@ -1,0 +1,26 @@
+{
+  "name": "dockerDemoWorker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "bin/www",
+  "author": "Basavaraj K N",
+  "license": "MIT",
+  "scripts": {
+    "work": "node bin/work"
+  },
+  "dependencies": {
+    "async": "^2.6.0",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "log4js": "^2.4.1",
+    "morgan": "^1.9.0",
+    "mongoose": "^5.0.0-rc1"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^2.2.5",
+    "supertest": "^3.0.0"
+  },
+  "keywords": []
+}

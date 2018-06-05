@@ -1,0 +1,101 @@
+version: '3'
+
+volumes:
+  mongodata:
+    
+networks:
+  docker_demo:
+    driver: bridge
+
+services:
+
+  docker_demo_webservice:
+    image: docker_demo_webservice:1.0.0
+    build: ./webService/
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+      restart_policy:
+        condition: any
+    environment:
+      PORT: 3000
+      MONGO_URL: 'mongodb://docker_demo_mongodb:27017/organizationOne'
+      REDIS_URL: 'redis://docker_demo_redis:6379/'
+    ports:
+      - "3000:3000"
+    #Create a network link with the container so that service running on that container is usable
+    links: 
+      - docker_demo_mongodb
+    networks:
+      - docker_demo
+    entrypoint:
+      -  /app/wait-for-service.sh #This was copied over to container as part of the code base
+      - 'docker_demo_mongodb'
+      - '27017'
+      - 'npm start'
+      
+  docker_demo_worker:
+    image: docker_demo_worker:1.0.0
+    build: ./workerService/
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+      restart_policy:
+        condition: any
+    environment:
+      REDIS_URL: 'redis://docker_demo_redis:6379/'
+    #Create a network link with the container so that service running on that container is usable
+    links: 
+      - docker_demo_redis
+    networks:
+      - docker_demo
+    entrypoint:
+      -  /app/wait-for-service.sh #This was copied over to container as part of the code base
+      - 'docker_demo_redis'
+      - '6379'
+      - 'npm run work'
+
+  docker_demo_mongodb:
+    image: mvertes/alpine-mongo:3.6.5-0
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+      restart_policy:
+        condition: any
+    volumes:
+      - mongodata:/data/db
+    #Expose this port to other containers in the network
+    expose:
+      - 27017
+    #Enable only if you want to access this from host machine
+    ports:
+      - "27017:27017"
+    networks:
+      - docker_demo
+
+  docker_demo_redis:
+    image: smebberson/alpine-redis
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+      restart_policy:
+        condition: any
+    expose:
+      - 6379
+    #Enable only if you want to access this from host machine
+    ports:
+      - "6379:6379"
+    networks:
+      - docker_demo
