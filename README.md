@@ -30,3 +30,8 @@ curl -X POST \
   "email":"batman@gotham.com"
 }'
 ```
+
+### Additional settings
+Optionally you may have to run this command, in case your docker-compose is unable to create by itself
+
+`docker volume create mongodata`
